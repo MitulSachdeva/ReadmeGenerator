@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>README Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>📘 README Generator</h1>
+
+    <div id="repo-type-section">
+      <h2>Select Repository Type</h2>
+      <div id="repo-options">
+      <label>
+        <input type="radio" name="repoType" value="public" checked /> 
+        Public Repo
+      </label>
+      <label>
+        <input type="radio" name="repoType" value="private" />
+        Private Repo
+      </label>
+      </div>
+      <br /><br />
+      <button onclick="proceedRepoType()">➡️ Continue</button>
+    </div>
+
+    <div id="login-section" style="display: none;">
+      <p>You selected a <b>private repo</b>. Please login with GitHub:</p>
+      <button onclick="loginWithGitHub()">🔑 Login with GitHub</button>
+    </div>
+
+    <div id="repo-section" style="display: none;">
+      <h2>Enter Repository Details</h2>
+      <input type="text" id="owner" placeholder="Owner (e.g. MitulSachdeva)" />
+      <input type="text" id="repo" placeholder="Repo (e.g. To-Do-List-App)" />
+      <br /><br />
+      <button onclick="fetchRepo()">📊 Get Repo Data</button>
+      <button onclick="downloadReadme()">📥 Generate README</button>
+    </div>
+
+    <h2>Output:</h2>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    let selectedRepoType = "public"; 
+
+    function proceedRepoType() {
+      const radios = document.querySelectorAll("input[name='repoType']");
+      radios.forEach(r => {
+        if (r.checked) selectedRepoType = r.value;
+      });
+
+      document.getElementById("repo-type-section").style.display = "none";
+
+      if (selectedRepoType === "private") {
+        document.getElementById("login-section").style.display = "block";
+      } else {
+        document.getElementById("repo-section").style.display = "block";
+      }
+    }
+
+    function loginWithGitHub() {
+      window.location.href = "/auth/login";
+    }
+
+  window.onload = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.has("code") || urlParams.get("loggedIn") === "true") {
+
+    selectedRepoType = "private";
+
+    document.getElementById("repo-type-section").style.display = "none";
+    document.getElementById("login-section").style.display = "none";
+
+    document.getElementById("repo-section").style.display = "block";
+  }
+};
+
+
+    async function fetchRepo() {
+      const owner = document.getElementById("owner").value.trim();
+      const repo = document.getElementById("repo").value.trim();
+      if (!owner || !repo) {
+        alert("Please enter both owner and repo.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/repo?owner=${owner}&repo=${repo}&type=${selectedRepoType}`);
+        if (!res.ok) throw new Error("Failed to fetch repo data");
+        const data = await res.json();
+        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById("output").textContent = "❌ " + err.message;
+      }
+    }
+
+    async function downloadReadme() {
+      const owner = document.getElementById("owner").value.trim();
+      const repo = document.getElementById("repo").value.trim();
+      if (!owner || !repo) {
+        alert("Please enter both owner and repo.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/readme?owner=${owner}&repo=${repo}&type=${selectedRepoType}`);
+        if (!res.ok) throw new Error("Failed to generate README");
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "README.md";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        document.getElementById("output").textContent = "❌ " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -103,14 +103,6 @@ SESSION_SECRET=your_session_secret
 npm start
 ```
 
-## 📸 Screenshots
-
-Add screenshots of:
-
-* Home Page
-* GitHub Login Flow
-* Generated README Output
-
 ## 🔮 Future Improvements
 
 * Repository structure analysis
@@ -118,7 +110,3 @@ Add screenshots of:
 * Multiple README templates
 * README preview editor
 * Support for additional AI providers
-
-## 📄 License
-
-This project is available under the MIT License.

@@ -13,9 +13,9 @@ app.use(express.static("public"));
 
 app.use(
   session({
-    secret: "readme-secret-key",
-    resave: false,
-    saveUninitialized: true,
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
   })
 );
 

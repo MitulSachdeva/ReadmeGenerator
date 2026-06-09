@@ -24,15 +24,6 @@ const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 const CALLBACK_URL = process.env.GITHUB_CALLBACK_URL;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-console.log("Gemini Key Present:", !!GEMINI_API_KEY);
-
-if (GEMINI_API_KEY) {
-  console.log(
-    "Gemini Key Prefix:",
-    GEMINI_API_KEY.substring(0, 10)
-  );
-}
-
 async function generateSection(prompt) {
   if (!GEMINI_API_KEY) return "- To be added";
 
